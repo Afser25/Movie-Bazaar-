@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Panel - Movie Viewer</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .movie-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 30%;
+            margin: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .movie-card img {
+            width: 100%;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .movie-card h3 {
+            padding: 10px;
+            margin: 0;
+            background-color: #333;
+            color: #fff;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-bar {
+            margin: 20px 0;
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .category-select {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            border: 1px solid #ccc;
+        }
+
+        #movie-detail-page {
+            display: none;
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #movie-player {
+            width: 100%;
+            height: 500px;
+            border-radius: 8px;
+        }
+
+        #movie-details {
+            margin-top: 20px;
+        }
+
+        #movie-details h3 {
+            color: #333;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Movie Viewer</h1>
+</header>
+
+<div class="container">
+    <!-- Search Bar -->
+    <input type="text" class="search-bar" id="movie-search" placeholder="Search for a movie..." onkeyup="searchMovies()">
+    
+    <!-- Category Filter -->
+    <select id="category-select" class="category-select" onchange="filterMoviesByCategory()">
+        <option value="">Select Category</option>
+    </select>
+
+    <!-- Movie List -->
+    <div id="movie-list" class="container"></div>
+</div>
+
+<!-- Movie Detail Page -->
+<div id="movie-detail-page">
+    <h2 id="movie-title"></h2>
+    <div id="movie-player-container">
+        <video id="movie-player" controls></video>
+    </div>
+    <div id="movie-details">
+        <h3>Details</h3>
+        <p><strong>Genre:</strong> <span id="movie-genre"></span></p>
+        <p><strong>Release Year:</strong> <span id="movie-year"></span></p>
+        <p><strong>Description:</strong> <span id="movie-description"></span></p>
+    </div>
+    <button onclick="goBack()">Back</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyA0SGhRFaylQy92qJGKwailBNQmbN8BeWY",
+        authDomain: "kotha-web-a5573.firebaseapp.com",
+        databaseURL: "https://kotha-web-a5573-default-rtdb.firebaseio.com",
+        projectId: "kotha-web-a5573",
+        storageBucket: "kotha-web-a5573.appspot.com",
+        messagingSenderId: "352220978721",
+        appId: "1:352220978721:web:2bb77246c9e91257d28d60",
+        measurementId: "G-G8XHYT53L3"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    // Load categories and movies
+    function loadCategories() {
+        const categorySelect = document.getElementById('category-select');
+        firebase.database().ref('categories').on('value', function(snapshot) {
+            const categories = snapshot.val();
+            for (const categoryId in categories) {
+                const category = categories[categoryId];
+                const option = document.createElement('option');
+                option.value = categoryId;
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
+            }
+        });
+    }
+
+    function loadMovies() {
+        const movieList = document.getElementById('movie-list');
+        movieList.innerHTML = '';
+
+        firebase.database().ref('movies').on('value', function(snapshot) {
+            const movies = snapshot.val();
+            for (const movieId in movies) {
+                const movie = movies[movieId];
+                const movieCard = document.createElement('div');
+                movieCard.classList.add('movie-card');
+                movieCard.innerHTML = `
+                    <img src="${movie.photoUrl}" alt="${movie.title}">
+                    <h3>${movie.title} (${movie.year})</h3>
+                `;
+                movieCard.onclick = function() {
+                    showMovieDetails(movieId);
+                };
+                movieList.appendChild(movieCard);
+            }
+        });
+    }
+
+    // Search movies by name
+    function searchMovies() {
+        const query = document.getElementById('movie-search').value.toLowerCase();
+        const movieCards = document.querySelectorAll('.movie-card');
+        movieCards.forEach(card => {
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            if (title.includes(query)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Filter movies by category
+    function filterMoviesByCategory() {
+        const selectedCategory = document.getElementById('category-select').value;
+        const movieList = document.getElementById('movie-list');
+        movieList.innerHTML = '';
+
+        firebase.database().ref('movies').on('value', function(snapshot) {
+            const movies = snapshot.val();
+            for (const movieId in movies) {
+                const movie = movies[movieId];
+                if (selectedCategory === '' || movie.categories.includes(selectedCategory)) {
+                    const movieCard = document.createElement('div');
+                    movieCard.classList.add('movie-card');
+                    movieCard.innerHTML = `
+                        <img src="${movie.photoUrl}" alt="${movie.title}">
+                        <h3>${movie.title} (${movie.year})</h3>
+                    `;
+                    movieCard.onclick = function() {
+                        showMovieDetails(movieId);
+                    };
+                    movieList.appendChild(movieCard);
+                }
+            }
+        });
+    }
+
+    // Show movie details in a new page
+    function showMovieDetails(movieId) {
+        firebase.database().ref('movies/' + movieId).once('value', function(snapshot) {
+            const movie = snapshot.val();
+            document.getElementById('movie-title').textContent = movie.title;
+            document.getElementById('movie-genre').textContent = movie.genre;
+            document.getElementById('movie-year').textContent = movie.year;
+            document.getElementById('movie-description').textContent = movie.description;
+            document.getElementById('movie-player').src = movie.url;
+
+            document.getElementById('movie-detail-page').style.display = 'block';
+            document.querySelector('.container').style.display = 'none';
+        });
+    }
+
+    // Go back to the movie list
+    function goBack() {
+        document.getElementById('movie-detail-page').style.display = 'none';
+        document.querySelector('.container').style.display = 'flex';
+    }
+
+    // Initialize app
+    window.onload = function() {
+        loadCategories();
+        loadMovies();
+    };
+</script>
+
+</body>
+</html>
