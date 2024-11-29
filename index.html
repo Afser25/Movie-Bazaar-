@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> MOVIE BAZAAR </title>
@@ -97,7 +98,81 @@
             cursor: pointer;
             transition: background 0.3s;
         }
+    
+.video-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
+}
 
+video {
+    width: 100%;
+    display: block;
+}
+
+.controls {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-radius: 0 0 8px 8px;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.controls.show {
+    opacity: 1;
+}
+
+.controls button,
+.controls input[type="range"] {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    outline: none;
+    font-size: 14px;
+}
+
+.controls button:hover,
+.controls input[type="range"]:hover {
+    color: #00c6ff;
+}
+
+.controls .icon {
+    font-size: 18px;
+}
+
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 4px solid transparent;
+    border-top: 4px solid #00c6ff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
         button:hover {
             background: #0056b3;
         }
@@ -113,7 +188,20 @@
 
 <div id="movie-detail-page">
     <h2 id="movie-title"></h2>
-    <video id="movie-player" controls></video>
+    <div class="video-container">
+    <video id="movie-player" controlsList="nodownload">
+        <source id="movie-video-source" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="controls" id="custom-controls">
+        <button id="play-btn"><i class="fas fa-play icon"></i></button>
+        <input type="range" id="progress-bar" value="0" max="100">
+        <button id="mute-btn"><i class="fas fa-volume-up icon"></i></button>
+        <input type="range" id="volume-bar" value="100" max="100">
+        <button id="fullscreen-btn"><i class="fas fa-expand icon"></i></button>
+    </div>
+    <div class="loading" id="loading-spinner"></div>
+</div>
     <div class="movie-details">
         <p><strong>Genre:</strong> <span id="movie-genre"></span></p>
         <p><strong>Release Year:</strong> <span id="movie-year"></span></p>
@@ -162,6 +250,108 @@
             }
         });
     }
+    
+    
+    const video = document.getElementById('movie-player');
+    const customControls = document.getElementById('custom-controls');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const playBtn = document.getElementById('play-btn');
+    const muteBtn = document.getElementById('mute-btn');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const volumeBar = document.getElementById('volume-bar');
+
+    // Firebase থেকে ভিডিও URL লোড করা
+    const movieId = 'your-movie-id'; // মুভির আইডি ডায়নামিকভাবে ব্যবহার করুন
+    const databaseRef = firebase.database().ref('movies/' + movieId);
+
+    databaseRef.once('value').then(snapshot => {
+        const movieData = snapshot.val();
+        if (movieData && movieData.url) {
+            document.getElementById('movie-video-source').src = movieData.url;
+            video.load(); // নতুন URL লোড করুন
+        }
+    }).catch(error => {
+        console.error('Error fetching movie data:', error);
+    });
+
+    let hideControlsTimeout;
+
+    // Hide the default video controls
+    video.controls = false;
+
+    // Function to show custom controls
+    function showControls() {
+        clearTimeout(hideControlsTimeout);
+        customControls.classList.add('show');
+        hideControlsTimeout = setTimeout(() => {
+            customControls.classList.remove('show');
+        }, 3000);
+    }
+
+    // Play/Pause functionality
+    playBtn.addEventListener('click', () => {
+        if (video.paused) {
+            video.play();
+            playBtn.innerHTML = '<i class="fas fa-pause icon"></i>';
+        } else {
+            video.pause();
+            playBtn.innerHTML = '<i class="fas fa-play icon"></i>';
+        }
+    });
+
+    // Update progress bar as the video plays
+    video.addEventListener('timeupdate', () => {
+        const value = (video.currentTime / video.duration) * 100;
+        progressBar.value = value;
+    });
+
+    // Seek functionality
+    progressBar.addEventListener('input', () => {
+        const value = (progressBar.value / 100) * video.duration;
+        video.currentTime = value;
+    });
+
+    // Mute/Unmute functionality
+    muteBtn.addEventListener('click', () => {
+        video.muted = !video.muted;
+        muteBtn.innerHTML = video.muted ? '<i class="fas fa-volume-mute icon"></i>' : '<i class="fas fa-volume-up icon"></i>';
+    });
+
+    // Volume control
+    volumeBar.addEventListener('input', () => {
+        video.volume = volumeBar.value / 100;
+    });
+
+    // Fullscreen functionality
+    fullscreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            video.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    });
+
+    // Show loading spinner when video is loading
+    video.addEventListener('loadstart', () => {
+        loadingSpinner.style.display = 'block';
+    });
+
+    // Hide loading spinner when video is ready to play
+    video.addEventListener('canplay', () => {
+        loadingSpinner.style.display = 'none';
+    });
+
+    // Automatically hide controls when video starts playing
+    video.addEventListener('play', () => {
+        hideControlsTimeout = setTimeout(() => {
+            customControls.classList.remove('show');
+        }, 3000);
+    });
+
+    // Show controls on mouse move
+    video.addEventListener('mousemove', showControls);
+
 
     function showMovieDetails(movieId, movie) {
         // Hide the movie list and show the detail page
