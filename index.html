@@ -25,6 +25,7 @@
         header h1 {
             margin: 0;
             color: #fff;
+            font-size: 15px;
         }
 
         .container {
@@ -176,15 +177,96 @@ video {
         button:hover {
             background: #0056b3;
         }
+    
+      /* Footer Styles */
+footer {
+    background: #243B55;
+    color: #fff;
+    padding: 40px 20px;
+    margin-top: 0px;
+    shado: 10;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+}
+
+.footer-section h3 {
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    color: #00c6ff;
+}
+
+.footer-section p {
+    font-size: 0.9em;
+    line-height: 1.6;
+}
+
+.admin-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 3px solid #00c6ff;
+}
+    .logo-photo {
+    width: 300px;
+    height: 110px;
+   
+    margin-bottom: 10px;
+    border: 3px solid #00c6ff;
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.social-links a {
+    color: #fff;
+    font-size: 1.5em;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.social-links a:hover {
+    color: #00c6ff;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    font-size: 1em;
+    color: #bbb;
+}
+
+.footer-bottom p {
+    margin: 0;
+    
+}
     </style>
 </head>
 <body>
 
 <header>
-    <h1> MOVIE BAZAAR </h1>
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2NFPRRyzgtJMd4sQv5SA3i5PMlVJZ2Czs9R7cymFesqtXkMmBRneft2oEqcyL_mwK5E9LX5gRRuJu4E3_hk1iJCJjeo60Pd5DaKqN0_Ts3QHFXZXN0i3okGXIEkT2Kj-_xWrqiAgXztCxNm_g8dPc30Y5APbe1ozLk5itgQMJ5huu1hbpBcYmlkDne10/s2000/Photoroom-20241004_023105.png" alt="logo photo" class="logo-photo">
+     
+    <h1>মুভি বাজার – সিনেমার নতুন ঠিকানা!
+
+</h1>
 </header>
 
 <div id="movie-list" class="container"></div>
+       
 
 <div id="movie-detail-page">
     <h2 id="movie-title"></h2>
@@ -211,6 +293,38 @@ video {
     </div>
     <button onclick="goBack()">Back</button>
 </div>
+        <footer>
+    <div class="footer-content">
+        <div class="footer-section about">
+            <h3>About Movie Bazaar</h3>
+            <p>Movie Bazaar is your ultimate destination for discovering movies online. From the latest blockbusters to timeless classics, we have it all. Enjoy streaming with high-quality videos and a smooth interface.</p>
+            <p> "মুভি বাজার – আপনার সিনেমা দেখার বিশ্ব। নতুন সব ব্লকবাস্টার থেকে চিরকালীন প্রিয় ক্লাসিক, সবই এখানে হাতের মুঠোয়। ঝামেলামুক্ত ইন্টারফেস আর উন্নত ভিডিও মানে উপভোগ করুন সিনেমা দেখার এক নতুন অভিজ্ঞতা।"
+
+ </p>
+        </div>
+        <div class="footer-section admin">
+            <h3>Admin Profile</h3>
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjEu9Q2kQT6t28K3IDrNs0CPbdUzJwRDiqwAwrl1XB1jCA7uY88otF7tOat6HWqmWvEwUxiUCQd3GljbxXKm7PvYmexEJZ_vJRQn7KHQ77bQFYPl6u5aSDlhjJl9n5SbIGB3-eG7tp6QcRAisMyzGuB0opzLUEYHePfA6f1URi3qddC-rC4mOLH3PRoumE/s1080/1709544088771.jpg" alt="Admin Photo" class="admin-photo">
+                
+            <p><strong>Admin:</strong> Afser Hossian Opu Chowdhury</p>        
+
+        </div>
+        <div class="footer-section social">
+            <h3>Follow Us</h3>
+            <div class="social-links">
+                <a href="https://facebook.com" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://twitter.com" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://youtube.com" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 Movie Bazaar. All rights reserved.</p>
+    </div>
+</footer>
+
 
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
