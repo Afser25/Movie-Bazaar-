@@ -1,190 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> MOVIE BAZAAR </title>
+    <title>Movie Bazaar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <style>
-        /* General Styles */
         body {
-            font-family: 'Arial', sans-serif;
-            margin: 10;
-            padding: 5;
-            background: linear-gradient(to right, #141E30, #243B55);
-            color: #fff;
-        }
-
-        header {
-            background: #333;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-        }
-
-        header h1 {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
             color: #fff;
-            font-size: 15px;
+            box-sizing: border-box;
         }
-
-        .container {
+        header {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
             padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 36px;
+            letter-spacing: 2px;
+        }
+        #movie-list {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
+            padding: 30px;
         }
-
-        /* Movie Card Styles */
         .movie-card {
-            background: #1E293B;
+            width: 240px;
             margin: 15px;
-            color: #fff;
+            background-color: #222;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            width: 280px;
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease-in-out;
             cursor: pointer;
         }
-
-        .movie-card img {
-            width: 100%;
-            height: auto;
-        }
-
-        .movie-card h3 {
-            margin: 0;
-            padding: 10px;
-            font-size: 1.2em;
-            background: #334155;
-            text-align: center;
-        }
-
         .movie-card:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
         }
-
-        /* Movie Detail Page Styles */
+        .movie-card img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-bottom: 5px solid #0072ff;
+        }
+        .movie-card h3 {
+            margin: 10px;
+            font-size: 18px;
+            color: #f1f1f1;
+        }
+  
         #movie-detail-page {
             display: none;
-            padding: 20px;
-            background: #1E293B;
-            margin: 20px auto;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            max-width: 800px;
+            padding: 30px;
+            text-align: center;
         }
-
-        #movie-player {
-            width: 100%;
-            height: 450px;
+        .custom-video-player {
+            width: 90%;
+            height: 40%;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            background: #000;
             border-radius: 10px;
-            
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
         }
-
-        .movie-details {
-            margin-top: 20px;
+        .custom-video-player video {
+            width: 100%;
+            height: 70%;
+            pointer-events: none;
         }
-
-        /* Buttons */
-        button {
-            background: #1F6FEB;
-            color: white;
+        .controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: left;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .controls.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .controls button, .controls input {
+            background: none;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
+            color: white;
+            font-size: 16px;
             cursor: pointer;
-            transition: background 0.3s;
+            outline: none;
         }
-    
-.video-container {
-    position: relative;
-    width: 100%;
-    max-width: 800px;
-    background-color: #000;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    margin: 0 auto;
-}
-
-video {
-    width: 100%;
-    display: block;
-}
-
-.controls {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-radius: 0 0 8px 8px;
-    opacity: 0;
-    transition: opacity 0.5s;
-}
-
-.controls.show {
-    opacity: 1;
-}
-
-.controls button,
-.controls input[type="range"] {
-    background: none;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    outline: none;
-    font-size: 14px;
-}
-
-.controls button:hover,
-.controls input[type="range"]:hover {
-    color: #00c6ff;
-}
-
-.controls .icon {
-    font-size: 18px;
-}
-
-.loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 4px solid transparent;
-    border-top: 4px solid #00c6ff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-    to {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
-}
-        button:hover {
-            background: #0056b3;
+        .controls button:hover {
+            color: #00c6ff;
         }
-    
-      /* Footer Styles */
+        .progress-bar {
+            flex-grow: 1;
+            margin: 0 10px;
+            height: 20px;
+            background: #555;
+            border-radius: 3px;
+            position: relative;
+            cursor: pointer;
+        }
+        .progress {
+            width: 80%;
+            height: 100%;
+            background: #00c6ff;
+            border-radius: 20px;
+        }
+        .volume-slider {
+            width: 40px;
+        }
+    /* Footer Styles */
 footer {
     background: #243B55;
     color: #fff;
     padding: 40px 20px;
     margin-top: 0px;
-    shado: 10;
 }
 
 .footer-content {
@@ -217,13 +161,6 @@ footer {
     margin-bottom: 10px;
     border: 3px solid #00c6ff;
 }
-    .logo-photo {
-    width: 300px;
-    height: 110px;
-   
-    margin-bottom: 10px;
-    border: 3px solid #00c6ff;
-}
 
 .social-links {
     display: flex;
@@ -245,92 +182,45 @@ footer {
 .footer-bottom {
     text-align: center;
     padding-top: 20px;
-    font-size: 1em;
+    font-size: 0.8em;
     color: #bbb;
 }
 
 .footer-bottom p {
     margin: 0;
-    
 }
     </style>
 </head>
 <body>
-
-<header>
-        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2NFPRRyzgtJMd4sQv5SA3i5PMlVJZ2Czs9R7cymFesqtXkMmBRneft2oEqcyL_mwK5E9LX5gRRuJu4E3_hk1iJCJjeo60Pd5DaKqN0_Ts3QHFXZXN0i3okGXIEkT2Kj-_xWrqiAgXztCxNm_g8dPc30Y5APbe1ozLk5itgQMJ5huu1hbpBcYmlkDne10/s2000/Photoroom-20241004_023105.png" alt="logo photo" class="logo-photo">
-     
-    <h1>মুভি বাজার – সিনেমার নতুন ঠিকানা!
-
-</h1>
-</header>
-
-<div id="movie-list" class="container"></div>
-       
-
-<div id="movie-detail-page">
-    <h2 id="movie-title"></h2>
-    <div class="video-container">
-    <video id="movie-player" controlsList="nodownload">
-        <source id="movie-video-source" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-    <div class="controls" id="custom-controls">
-        <button id="play-btn"><i class="fas fa-play icon"></i></button>
-        <input type="range" id="progress-bar" value="0" max="100">
-        <button id="mute-btn"><i class="fas fa-volume-up icon"></i></button>
-        <input type="range" id="volume-bar" value="100" max="100">
-        <button id="fullscreen-btn"><i class="fas fa-expand icon"></i></button>
-    </div>
-    <div class="loading" id="loading-spinner"></div>
-</div>
-    <div class="movie-details">
-        <p><strong>Genre:</strong> <span id="movie-genre"></span></p>
-        <p><strong>Release Year:</strong> <span id="movie-year"></span></p>
-        <p><strong>Description:</strong> <span id="movie-description"></span></p>
-        <p><strong>Likes:</strong> <span id="movie-likes"></span></p>
-        <p><strong>Reviews:</strong> <span id="movie-reviews"></span></p>
-    </div>
-    <button onclick="goBack()">Back</button>
-</div>
-        <footer>
-    <div class="footer-content">
-        <div class="footer-section about">
-            <h3>About Movie Bazaar</h3>
-            <p>Movie Bazaar is your ultimate destination for discovering movies online. From the latest blockbusters to timeless classics, we have it all. Enjoy streaming with high-quality videos and a smooth interface.</p>
-            <p> "মুভি বাজার – আপনার সিনেমা দেখার বিশ্ব। নতুন সব ব্লকবাস্টার থেকে চিরকালীন প্রিয় ক্লাসিক, সবই এখানে হাতের মুঠোয়। ঝামেলামুক্ত ইন্টারফেস আর উন্নত ভিডিও মানে উপভোগ করুন সিনেমা দেখার এক নতুন অভিজ্ঞতা।"
-
- </p>
-        </div>
-        <div class="footer-section admin">
-            <h3>Admin Profile</h3>
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjEu9Q2kQT6t28K3IDrNs0CPbdUzJwRDiqwAwrl1XB1jCA7uY88otF7tOat6HWqmWvEwUxiUCQd3GljbxXKm7PvYmexEJZ_vJRQn7KHQ77bQFYPl6u5aSDlhjJl9n5SbIGB3-eG7tp6QcRAisMyzGuB0opzLUEYHePfA6f1URi3qddC-rC4mOLH3PRoumE/s1080/1709544088771.jpg" alt="Admin Photo" class="admin-photo">
+    <header>
+        <h1>Movie Bazaar</h1>
+    </header>
+    <div id="movie-list"></div>
+   <div id="movie-detail-page">
+        <div class="custom-video-player">
+            <video id="customVideo" autoplay></video>
+            <div class="controls" id="controls">
+                <button id="playPauseBtn">Play</button>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.1" value="1">
+                <span id="currentTime">00:00</span> / <span id="totalTime">00:00</span>
+                <button id="fullscreenBtn">Fullscreen</button>
+                <div> 
+                    </div>
+                  
+                    </div>
                 
-            <p><strong>Admin:</strong> Afser Hossian Opu Chowdhury</p>        
-
-        </div>
-        <div class="footer-section social">
-            <h3>Follow Us</h3>
-            <div class="social-links">
-                <a href="https://facebook.com" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://twitter.com" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://youtube.com" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="footer-bottom">
-        <p>&copy; 2024 Movie Bazaar. All rights reserved.</p>
-    </div>
-</footer>
-
-
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
-
-<script>
-    // Firebase configuration
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+         // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyA0SGh...",
         authDomain: "kotha-web-a5573.firebaseapp.com",
@@ -342,163 +232,133 @@ footer {
         measurementId: "G-G8XHYT53L3"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-    function loadMovies() {
-        const movieList = document.getElementById('movie-list');
-        movieList.innerHTML = '';
+        const video = document.getElementById('customVideo');
+        const controls = document.getElementById('controls');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const currentTimeDisplay = document.getElementById('currentTime');
+        const totalTimeDisplay = document.getElementById('totalTime');
 
-        db.ref('movies').once('value', snapshot => {
-            const movies = snapshot.val();
-            for (const movieId in movies) {
-                const movie = movies[movieId];
-                const movieCard = document.createElement('div');
-                movieCard.classList.add('movie-card');
-                movieCard.innerHTML = `
-                    <img src="${movie.photoUrl}" alt="${movie.title}">
-                    <h3>${movie.title} (${movie.year})</h3>
-                `;
-                movieCard.onclick = () => showMovieDetails(movieId, movie);
-                movieList.appendChild(movieCard);
+        let hideControlsTimeout;
+
+        function loadMovies() {
+            const movieList = document.getElementById('movie-list');
+            database.ref('movies').once('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const movie = childSnapshot.val();
+                    const movieCard = document.createElement('div');
+                    movieCard.className = 'movie-card';
+                    movieCard.innerHTML = `
+                        <img src="${movie.photoUrl}" alt="${movie.title}">
+                        <h3>${movie.title}</h3>
+                    `;
+                    movieCard.addEventListener('click', () => showMovieDetails(movie));
+                    movieList.appendChild(movieCard);
+                });
+            });
+        }
+
+        function showMovieDetails(movie) {
+            document.getElementById('movie-list').style.display = 'none';
+            document.getElementById('movie-detail-page').style.display = 'block';
+            video.src = movie.url;
+            video.play();
+            resetControlsVisibility();
+        }
+
+        playPauseBtn.addEventListener('click', () => {
+            if (video.paused) {
+                video.play();
+                playPauseBtn.textContent = 'Pause';
+            } else {
+                video.pause();
+                playPauseBtn.textContent = 'Play';
             }
         });
-    }
+
+        video.addEventListener('timeupdate', () => {
+            const percent = (video.currentTime / video.duration) * 100;
+            progress.style.width = `${percent}%`;
+            currentTimeDisplay.textContent = formatTime(video.currentTime);
+        });
+
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            video.currentTime = percent * video.duration;
+        });
+
+        volumeSlider.addEventListener('input', (e) => {
+            video.volume = e.target.value;
+        });
+
+        video.addEventListener('loadedmetadata', () => {
+            totalTimeDisplay.textContent = formatTime(video.duration);
+        });
     
     
-    const video = document.getElementById('movie-player');
-    const customControls = document.getElementById('custom-controls');
-    const loadingSpinner = document.getElementById('loading-spinner');
-    const playBtn = document.getElementById('play-btn');
-    const muteBtn = document.getElementById('mute-btn');
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
-    const progressBar = document.getElementById('progress-bar');
-    const volumeBar = document.getElementById('volume-bar');
-
-    // Firebase থেকে ভিডিও URL লোড করা
-    const movieId = 'your-movie-id'; // মুভির আইডি ডায়নামিকভাবে ব্যবহার করুন
-    const databaseRef = firebase.database().ref('movies/' + movieId);
-
-    databaseRef.once('value').then(snapshot => {
-        const movieData = snapshot.val();
-        if (movieData && movieData.url) {
-            document.getElementById('movie-video-source').src = movieData.url;
-            video.load(); // নতুন URL লোড করুন
-        }
-    }).catch(error => {
-        console.error('Error fetching movie data:', error);
-    });
-
-    let hideControlsTimeout;
-
-    // Hide the default video controls
-    video.controls = false;
-
-    // Function to show custom controls
-    function showControls() {
-        clearTimeout(hideControlsTimeout);
-        customControls.classList.add('show');
-        hideControlsTimeout = setTimeout(() => {
-            customControls.classList.remove('show');
-        }, 3000);
-    }
-
-    // Play/Pause functionality
-    playBtn.addEventListener('click', () => {
-        if (video.paused) {
-            video.play();
-            playBtn.innerHTML = '<i class="fas fa-pause icon"></i>';
-        } else {
-            video.pause();
-            playBtn.innerHTML = '<i class="fas fa-play icon"></i>';
-        }
-    });
-
-    // Update progress bar as the video plays
-    video.addEventListener('timeupdate', () => {
-        const value = (video.currentTime / video.duration) * 100;
-        progressBar.value = value;
-    });
-
-    // Seek functionality
-    progressBar.addEventListener('input', () => {
-        const value = (progressBar.value / 100) * video.duration;
-        video.currentTime = value;
-    });
-
-    // Mute/Unmute functionality
-    muteBtn.addEventListener('click', () => {
-        video.muted = !video.muted;
-        muteBtn.innerHTML = video.muted ? '<i class="fas fa-volume-mute icon"></i>' : '<i class="fas fa-volume-up icon"></i>';
-    });
-
-    // Volume control
-    volumeBar.addEventListener('input', () => {
-        video.volume = volumeBar.value / 100;
-    });
-
-    // Fullscreen functionality
     fullscreenBtn.addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            video.requestFullscreen();
-        } else {
-            document.exitFullscreen();
+            if (video.requestFullscreen) {
+                video.requestFullscreen();
+            } else if (video.webkitRequestFullscreen) { 
+                video.webkitRequestFullscreen();
+            } else if (video.msRequestFullscreen) { 
+                video.msRequestFullscreen();
+            }
+        });
+
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
-    });
 
-    // Show loading spinner when video is loading
-    video.addEventListener('loadstart', () => {
-        loadingSpinner.style.display = 'block';
-    });
+        function resetControlsVisibility() {
+            controls.classList.remove('hidden');
+            clearTimeout(hideControlsTimeout);
+            hideControlsTimeout = setTimeout(() => controls.classList.add('hidden'), 3000);
+        }
 
-    // Hide loading spinner when video is ready to play
-    video.addEventListener('canplay', () => {
-        loadingSpinner.style.display = 'none';
-    });
+        document.addEventListener('mousemove', resetControlsVisibility);
+        document.addEventListener('click', resetControlsVisibility);
 
-    // Automatically hide controls when video starts playing
-    video.addEventListener('play', () => {
-        hideControlsTimeout = setTimeout(() => {
-            customControls.classList.remove('show');
-        }, 3000);
-    });
+        window.onload = loadMovies;
+    </script>
+           <footer>
+    <div class="footer-content">
+        <div class="footer-section about">
+            <h3>About Movie Bazaar</h3>
+            <p>Movie Bazaar is your ultimate destination for discovering movies online. From the latest blockbusters to timeless classics, we have it all. Enjoy streaming with high-quality videos and a smooth interface.</p>
+            <p> "মুভি বাজার – আপনার সিনেমা দেখার বিশ্ব। নতুন সব ব্লকবাস্টার থেকে চিরকালীন প্রিয় ক্লাসিক, সবই এখানে হাতের মুঠোয়। ঝামেলামুক্ত ইন্টারফেস আর উন্নত ভিডিও মানে উপভোগ করুন সিনেমা দেখার এক নতুন অভিজ্ঞতা।"
 
-    // Show controls on mouse move
-    video.addEventListener('mousemove', showControls);
-
-
-    function showMovieDetails(movieId, movie) {
-        // Hide the movie list and show the detail page
-        document.getElementById('movie-list').style.display = 'none';
-        const detailPage = document.getElementById('movie-detail-page');
-        detailPage.style.display = 'block';
-
-        // Populate movie details
-        document.getElementById('movie-title').textContent = movie.title;
-        document.getElementById('movie-player').src = movie.url;
-        document.getElementById('movie-genre').textContent = movie.genre;
-        document.getElementById('movie-year').textContent = movie.year;
-        document.getElementById('movie-description').textContent = movie.description;
-
-        // Fetch likes and reviews
-        db.ref(`likes/${movieId}`).once('value', snapshot => {
-            const likes = snapshot.numChildren();
-            document.getElementById('movie-likes').textContent = likes;
-        });
-
-        db.ref(`reviews/${movieId}`).once('value', snapshot => {
-            const reviews = snapshot.numChildren();
-            document.getElementById('movie-reviews').textContent = reviews;
-        });
-    }
-
-    function goBack() {
-        document.getElementById('movie-detail-page').style.display = 'none';
-        document.getElementById('movie-list').style.display = 'flex';
-    }
-
-    window.onload = loadMovies;
-</script>
-
+ </p>
+        </div>
+        <div class="footer-section admin">
+            <h3>Admin Profile</h3>
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjEu9Q2kQT6t28K3IDrNs0CPbdUzJwRDiqwAwrl1XB1jCA7uY88otF7tOat6HWqmWvEwUxiUCQd3GljbxXKm7PvYmexEJZ_vJRQn7KHQ77bQFYPl6u5aSDlhjJl9n5SbIGB3-eG7tp6QcRAisMyzGuB0opzLUEYHePfA6f1URi3qddC-rC4mOLH3PRoumE/s1080/1709544088771.jpg" alt="Admin Photo" class="admin-photo">
+            <p><strong>Admin:</strong> Afser Hossian Opu Chowdhury</p>
+            
+        </div>
+        <div class="footer-section social">
+            <h3>Follow Us</h3>
+            <div class="social-links">
+                <a href="https://www.facebook.com/afserhossenopuchowdhury" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://twitter.com" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://youtube.com" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 Movie Bazaar. All rights reserved.</p>
+    </div>
+</footer>
 </body>
 </html>
