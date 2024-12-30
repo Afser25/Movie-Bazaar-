@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Bazaar</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,14 +12,12 @@
             padding: 0;
             background: linear-gradient(to right, #00c6ff, #0072ff);
             color: #fff;
-            box-sizing: border-box;
         }
         header {
             background-color: rgba(0, 0, 0, 0.7);
             color: white;
             padding: 20px;
             text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
         h1 {
             font-size: 36px;
@@ -39,8 +36,8 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease-in-out;
             cursor: pointer;
+            transition: transform 0.3s;
         }
         .movie-card:hover {
             transform: scale(1.05);
@@ -56,74 +53,72 @@
             font-size: 18px;
             color: #f1f1f1;
         }
-  
         #movie-detail-page {
             display: none;
             padding: 30px;
             text-align: center;
         }
-        .custom-video-player {
+        .video-container {
+            position: relative;
             width: 90%;
-            height: 40%;
             max-width: 900px;
             margin: 0 auto;
-            position: relative;
             background: #000;
             border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
         }
-        .custom-video-player video {
+        video {
             width: 100%;
-            height: 70%;
-            pointer-events: none;
+            height: 500px;
+            border-radius: 10px;
+            outline: none;
+            pointer-events: none; /* Prevent any interaction */
         }
         .controls {
             position: absolute;
-            bottom: 0;
+            bottom: 10px;
             left: 0;
-            width: 100%;
-            display: flex;
-            align-items: left;
-            justify-content: space-between;
+            right: 0;
             background: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            transition: opacity 0.3s ease-in-out;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            opacity: 1;
+            transition: opacity 0.3s;
         }
         .controls.hidden {
             opacity: 0;
             pointer-events: none;
         }
-        .controls button, .controls input {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            outline: none;
-        }
-        .controls button:hover {
-            color: #00c6ff;
-        }
         .progress-bar {
-            flex-grow: 1;
+            flex: 1;
+            height: 5px;
+            background: #444;
+            border-radius: 5px;
             margin: 0 10px;
-            height: 20px;
-            background: #555;
-            border-radius: 3px;
-            position: relative;
             cursor: pointer;
         }
         .progress {
-            width: 80%;
             height: 100%;
-            background: #00c6ff;
-            border-radius: 20px;
+            background: #0072ff;
+            width: 0;
+        }
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .control-btn:hover {
+            color: #0072ff;
         }
         .volume-slider {
-            width: 40px;
+            width: 100px;
+            margin-left: 10px;
         }
-    /* Footer Styles */
+    
+        /* Footer Styles */
 footer {
     background: #243B55;
     color: #fff;
@@ -189,6 +184,10 @@ footer {
 .footer-bottom p {
     margin: 0;
 }
+    
+    
+    
+    
     </style>
 </head>
 <body>
@@ -196,55 +195,96 @@ footer {
         <h1>Movie Bazaar</h1>
     </header>
     <div id="movie-list"></div>
-   <div id="movie-detail-page">
-        <div class="custom-video-player">
-            <video id="customVideo" autoplay></video>
+    <div id="movie-detail-page">
+        <div class="video-container" id="videoContainer">
+            <video id="customVideo"></video>
             <div class="controls" id="controls">
-                <button id="playPauseBtn">Play</button>
+                <button id="playPause" class="control-btn"><i class="fas fa-play"></i></button>
                 <div class="progress-bar" id="progressBar">
                     <div class="progress" id="progress"></div>
                 </div>
-                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.1" value="1">
-                <span id="currentTime">00:00</span> / <span id="totalTime">00:00</span>
-                <button id="fullscreenBtn">Fullscreen</button>
-                <div> 
-                    </div>
-                  
-                    </div>
-                
-                </div>
-                </div>
+                <button id="fullscreen" class="control-btn"><i class="fas fa-expand"></i></button>
+                <input id="volume" class="volume-slider" type="range" min="0" max="1" step="0.1">
             </div>
         </div>
     </div>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
-         // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyA0SGh...",
-        authDomain: "kotha-web-a5573.firebaseapp.com",
-        databaseURL: "https://kotha-web-a5573-default-rtdb.firebaseio.com",
-        projectId: "kotha-web-a5573",
-        storageBucket: "kotha-web-a5573.appspot.com",
-        messagingSenderId: "352220978721",
-        appId: "1:352220978721:web:2bb77246c9e91257d28d60",
-        measurementId: "G-G8XHYT53L3"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyA0SGh...",
+            authDomain: "kotha-web-a5573.firebaseapp.com",
+            databaseURL: "https://kotha-web-a5573-default-rtdb.firebaseio.com",
+            projectId: "kotha-web-a5573",
+            storageBucket: "kotha-web-a5573.appspot.com",
+            messagingSenderId: "352220978721",
+            appId: "1:352220978721:web:2bb77246c9e91257d28d60",
+            measurementId: "G-G8XHYT53L3"
+        };
 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         const video = document.getElementById('customVideo');
         const controls = document.getElementById('controls');
-        const playPauseBtn = document.getElementById('playPauseBtn');
+        const videoContainer = document.getElementById('videoContainer');
+        const playPause = document.getElementById('playPause');
         const progressBar = document.getElementById('progressBar');
         const progress = document.getElementById('progress');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const currentTimeDisplay = document.getElementById('currentTime');
-        const totalTimeDisplay = document.getElementById('totalTime');
+        const fullscreen = document.getElementById('fullscreen');
+        const volume = document.getElementById('volume');
 
-        let hideControlsTimeout;
+        let controlsTimeout;
+
+        function showControls() {
+            controls.classList.remove('hidden');
+            clearTimeout(controlsTimeout);
+            controlsTimeout = setTimeout(() => {
+                controls.classList.add('hidden');
+            }, 3000);
+        }
+
+        videoContainer.addEventListener('mousemove', showControls);
+        videoContainer.addEventListener('click', showControls);
+
+        videoContainer.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        playPause.addEventListener('click', () => {
+            if (video.paused) {
+                video.play();
+                playPause.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                video.pause();
+                playPause.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        });
+
+        video.addEventListener('timeupdate', () => {
+            const percent = (video.currentTime / video.duration) * 100;
+            progress.style.width = `${percent}%`;
+        });
+
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const posX = e.clientX - rect.left;
+            const percent = posX / rect.width;
+            video.currentTime = percent * video.duration;
+        });
+
+        fullscreen.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                videoContainer.requestFullscreen();
+                fullscreen.innerHTML = '<i class="fas fa-compress"></i>';
+            } else {
+                document.exitFullscreen();
+                fullscreen.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        });
+
+        volume.addEventListener('input', (e) => {
+            video.volume = e.target.value;
+        });
 
         function loadMovies() {
             const movieList = document.getElementById('movie-list');
@@ -266,71 +306,27 @@ footer {
         function showMovieDetails(movie) {
             document.getElementById('movie-list').style.display = 'none';
             document.getElementById('movie-detail-page').style.display = 'block';
-            video.src = movie.url;
-            video.play();
-            resetControlsVisibility();
-        }
 
-        playPauseBtn.addEventListener('click', () => {
-            if (video.paused) {
-                video.play();
-                playPauseBtn.textContent = 'Pause';
+            if (movie.url.endsWith('.m3u8')) {
+                if (Hls.isSupported()) {
+                    const hls = new Hls();
+                    hls.loadSource(movie.url);
+                    hls.attachMedia(video);
+                } else {
+                    video.src = movie.url;
+                }
             } else {
-                video.pause();
-                playPauseBtn.textContent = 'Play';
+                video.src = movie.url;
             }
-        });
-
-        video.addEventListener('timeupdate', () => {
-            const percent = (video.currentTime / video.duration) * 100;
-            progress.style.width = `${percent}%`;
-            currentTimeDisplay.textContent = formatTime(video.currentTime);
-        });
-
-        progressBar.addEventListener('click', (e) => {
-            const rect = progressBar.getBoundingClientRect();
-            const percent = (e.clientX - rect.left) / rect.width;
-            video.currentTime = percent * video.duration;
-        });
-
-        volumeSlider.addEventListener('input', (e) => {
-            video.volume = e.target.value;
-        });
-
-        video.addEventListener('loadedmetadata', () => {
-            totalTimeDisplay.textContent = formatTime(video.duration);
-        });
-    
-    
-    fullscreenBtn.addEventListener('click', () => {
-            if (video.requestFullscreen) {
-                video.requestFullscreen();
-            } else if (video.webkitRequestFullscreen) { 
-                video.webkitRequestFullscreen();
-            } else if (video.msRequestFullscreen) { 
-                video.msRequestFullscreen();
-            }
-        });
-
-
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            video.play();
+            showControls();
         }
-
-        function resetControlsVisibility() {
-            controls.classList.remove('hidden');
-            clearTimeout(hideControlsTimeout);
-            hideControlsTimeout = setTimeout(() => controls.classList.add('hidden'), 3000);
-        }
-
-        document.addEventListener('mousemove', resetControlsVisibility);
-        document.addEventListener('click', resetControlsVisibility);
 
         window.onload = loadMovies;
     </script>
-           <footer>
+    
+    
+       <footer>
     <div class="footer-content">
         <div class="footer-section about">
             <h3>About Movie Bazaar</h3>
@@ -361,4 +357,4 @@ footer {
     </div>
 </footer>
 </body>
-</html>
+                </html>
